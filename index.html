@@ -37,75 +37,81 @@
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
+  html, body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background: #e9ebee;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-  .phone {
-    width: 375px;
-    max-width: 100%;
     background: #ffffff;
-    border-radius: 28px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.22);
-    overflow: hidden;
+    min-height: 100vh;
+    height: 100%;
+  }
+  /* Full-bleed app screen (not a floating card) so it fills the same
+     real mobile viewport the Qualtrics dialog sizes itself against --
+     that's what keeps the two visually in proportion on an actual phone
+     or a narrowed/emulated browser. */
+  .phone {
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
   }
   .header {
     background: linear-gradient(180deg, #005a2e 0%, #00401f 100%);
     color: #fff;
-    padding: 18px 20px 16px;
+    padding: 28px 24px 24px;
   }
   .header .brand {
     font-weight: 700;
-    font-size: 17px;
+    font-size: 22px;
     letter-spacing: 0.2px;
   }
   .header .live {
-    margin-top: 6px;
-    font-size: 12px;
+    margin-top: 10px;
+    font-size: 15px;
     font-weight: 600;
     color: #b9f6ca;
   }
   .live .dot {
     display: inline-block;
-    width: 7px; height: 7px;
+    width: 9px; height: 9px;
     background: #ff4d4f;
     border-radius: 50%;
-    margin-right: 6px;
+    margin-right: 8px;
     animation: pulse 1.4s infinite;
   }
   @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
 
-  .content { padding: 18px 20px 24px; }
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 24px 40px;
+  }
 
   .card {
     background: #f4f6f7;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
   }
   .card-title-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
   }
   .card-title {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 20px;
     color: #111;
   }
   .close-btn {
-    width: 26px; height: 26px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     border: none;
     background: #dfe3e6;
     color: #333;
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 700;
     cursor: pointer;
     line-height: 1;
@@ -116,9 +122,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 14px 0;
     border-bottom: 1px solid #e2e5e8;
-    font-size: 13px;
+    font-size: 17px;
     color: #333;
   }
   .selection:last-of-type { border-bottom: none; }
@@ -127,23 +133,23 @@
   .summary-row {
     display: flex;
     justify-content: space-between;
-    margin-top: 12px;
-    padding-top: 12px;
+    margin-top: 18px;
+    padding-top: 18px;
     border-top: 1px dashed #cfd4d8;
-    font-size: 13px;
+    font-size: 17px;
   }
   .summary-row .label { color: #666; }
   .summary-row .value { font-weight: 700; color: #111; }
-  .summary-row.big .value { font-size: 18px; color: #005a2e; }
+  .summary-row.big .value { font-size: 24px; color: #005a2e; }
 
-  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .actions { display: flex; gap: 14px; margin-top: 26px; }
   .btn {
     flex: 1;
-    padding: 14px 0;
-    border-radius: 14px;
+    padding: 20px 0;
+    border-radius: 16px;
     border: none;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 17px;
     cursor: pointer;
   }
   .btn-primary { background: #00a651; color: #fff; }
@@ -153,9 +159,9 @@
 
   .hint {
     text-align: center;
-    font-size: 11px;
+    font-size: 13px;
     color: #8a8f94;
-    margin-top: 14px;
+    margin-top: 20px;
     line-height: 1.5;
   }
 
