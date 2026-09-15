@@ -264,6 +264,25 @@ try{(new g("https://zno9dzasulsxoyh8b-qdemo.siteintercept.qualtrics.com/SIE/?Q_Z
     // #cancel-bet-builder (id is unique per element; duplicate ids below
     // are avoided by using -2 suffix on the second button).
     document.getElementById('cancel-bet-builder-2').id = 'cancel-bet-builder-footer';
+
+    // This intercept's "Intercept display event" is set to "Display with
+    // custom JavaScript code (Manually)" in Qualtrics Digital, which means
+    // it will NOT auto-evaluate on page load -- our own click handler has
+    // to explicitly ask Qualtrics to load + run its display logic at the
+    // moment the visitor abandons the Bet Builder. Per Qualtrics' Website/
+    // App Feedback JS API docs (single-instance evaluation pattern):
+    //   QSI.API.load();  -- loads the deployment code for this page
+    //   QSI.API.run();   -- evaluates display logic, shows the creative if it passes
+    function triggerBetBuilderIntercept() {
+      if (typeof QSI !== 'undefined' && QSI.API) {
+        QSI.API.load();
+        QSI.API.run();
+      } else {
+        console.warn('QSI.API not available yet -- DX snippet may still be loading.');
+      }
+    }
+    document.getElementById('cancel-bet-builder').addEventListener('click', triggerBetBuilderIntercept);
+    document.getElementById('cancel-bet-builder-footer').addEventListener('click', triggerBetBuilderIntercept);
   </script>
 
 </body>
