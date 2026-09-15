@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paddy Power - Bet Builder</title>
+
+<!--
+  ============================================================================
+  PADDY POWER BET BUILDER -- DIGITAL INTERCEPT DEMO PAGE
+  ============================================================================
+  Purpose: standalone mock of the in-play Bet Builder screen, for the
+  Flutter UKI RFP live demo (Act 1: Signal & RG Gate).
+
+  TO WIRE UP THE REAL QUALTRICS DIGITAL INTERCEPT:
+  1. Host this file somewhere reachable (GitHub Pages, Netlify, internal
+     sandbox -- whatever's approved).
+  2. Paste your Qualtrics DX "Web/App" project embed snippet just before
+     the closing </head> tag below, where marked.
+  3. In the Qualtrics Digital intercept builder: choose "Web intercept",
+     target this page's URL, and set the trigger to a CLICK on the
+     element with id="cancel-bet-builder" (the X / Cancel button).
+  4. Recommended creative: "Responsive dialog" for live-demo visibility
+     (Slider is more realistic for production but easy to miss on a
+     projector).
+
+  XID / SESSION TAGGING:
+  This page reads a `?ref=` URL parameter (e.g. ?ref=PPRC-1001 for Dave)
+  and exposes it as window.ppCustomerRef, plus displays it in a small
+  debug badge bottom-right. Point Qualtrics DX's JavaScript Variable or
+  URL Parameter targeting at this to tie real demo sessions back to the
+  XID_Profiles roster -- e.g. have a few colleagues each open the link
+  with a different ?ref= value.
+  ============================================================================
+-->
+
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    height: 100%;
+  }
+  /* Full-bleed app screen (not a floating card) so it fills the same
+     real mobile viewport the Qualtrics dialog sizes itself against --
+     that's what keeps the two visually in proportion on an actual phone
+     or a narrowed/emulated browser. */
+  .phone {
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    background: linear-gradient(180deg, #005a2e 0%, #00401f 100%);
+    color: #fff;
+    padding: 28px 24px 24px;
+  }
+  .header .brand {
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.2px;
+  }
+  .header .live {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #b9f6ca;
+  }
+  .live .dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    background: #ff4d4f;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.35 } }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 24px 40px;
+  }
+
+  .card {
+    background: #f4f6f7;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 20px;
+    color: #111;
+  }
+  .close-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: #dfe3e6;
+    color: #333;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .close-btn:hover { background: #cfd4d8; }
+
+  .selection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #e2e5e8;
+    font-size: 17px;
+    color: #333;
+  }
+  .selection:last-of-type { border-bottom: none; }
+  .selection .sel-odds { font-weight: 700; color: #005a2e; }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed #cfd4d8;
+    font-size: 17px;
+  }
+  .summary-row .label { color: #666; }
+  .summary-row .value { font-weight: 700; color: #111; }
+  .summary-row.big .value { font-size: 24px; color: #005a2e; }
+
+  .actions { display: flex; gap: 14px; margin-top: 26px; }
+  .btn {
+    flex: 1;
+    padding: 20px 0;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 17px;
+    cursor: pointer;
+  }
+  .btn-primary { background: #00a651; color: #fff; }
+  .btn-primary:hover { background: #009148; }
+  .btn-secondary { background: #fff; color: #005a2e; border: 1.5px solid #cfe8d6; }
+  .btn-secondary:hover { background: #f2f8f4; }
+
+  .hint {
+    text-align: center;
+    font-size: 13px;
+    color: #8a8f94;
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+
+  .debug-badge {
+    position: fixed;
+    bottom: 14px;
+    right: 14px;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-family: monospace;
+  }
+</style>
+
+<!-- ==== PASTE QUALTRICS DX WEB/APP EMBED SNIPPET BELOW THIS LINE ==== -->
+
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+
+(function(){var g=function(g){
+
+this.go=function(){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)};
+
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+
+try{(new g("https://zno9dzasulsxoyh8b-qdemo.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_O9dzaSULsxoyH8B")).start()}catch(i){}})();
+
+</script><div id='ZN_O9dzaSULsxoyH8B'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+
+<!--END WEBSITE FEEDBACK SNIPPET-->
+
+<!-- ==== END QUALTRICS DX SNIPPET ==== -->
+</head>
+<body>
+
+  <div class="phone">
+    <div class="header">
+      <div class="brand">Paddy Power</div>
+      <div class="live"><span class="dot"></span>LIVE &nbsp;&bull;&nbsp; Man Utd vs Arsenal &nbsp;&bull;&nbsp; 63'</div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title">Your Bet Builder</div>
+          <button class="close-btn" id="cancel-bet-builder" title="Cancel Bet Builder">&#10005;</button>
+        </div>
+
+        <div class="selection">
+          <span>Man Utd to win</span>
+          <span class="sel-odds">11/10</span>
+        </div>
+        <div class="selection">
+          <span>Over 2.5 Goals</span>
+          <span class="sel-odds">5/4</span>
+        </div>
+        <div class="selection">
+          <span>Bruno Fernandes to score</span>
+          <span class="sel-odds">7/2</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="label">Stake</span>
+          <span class="value">&pound;5.00</span>
+        </div>
+        <div class="summary-row big">
+          <span class="label">Potential Return</span>
+          <span class="value">&pound;42.50</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" id="cancel-bet-builder-2">Cancel</button>
+        <button class="btn btn-primary" id="place-bet">Place Bet</button>
+      </div>
+
+      <div class="hint">Demo page for Flutter UKI RFP walkthrough &mdash; not a real Paddy Power product.</div>
+    </div>
+  </div>
+
+  <div class="debug-badge" id="debug-badge">ref: none</div>
+
+  <script>
+    // Read ?ref= from the URL (e.g. ?ref=PPRC-1001 for Dave) and expose it
+    // as a plain global variable + on-page badge, so Qualtrics DX targeting
+    // (JS Variable or URL Parameter) can pick it up and tie the session
+    // back to a specific XID_Profiles record.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var ref = params.get('ref') || 'none';
+      window.ppCustomerRef = ref;
+      var badge = document.getElementById('debug-badge');
+      if (badge) badge.textContent = 'ref: ' + ref;
+    })();
+
+    // Both the header X and the footer Cancel button represent the same
+    // "abandon the Bet Builder" moment -- wire your DX click trigger to
+    // #cancel-bet-builder (id is unique per element; duplicate ids below
+    // are avoided by using -2 suffix on the second button).
+    document.getElementById('cancel-bet-builder-2').id = 'cancel-bet-builder-footer';
+  </script>
+
+</body>
+</html>
